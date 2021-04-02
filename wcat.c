@@ -11,7 +11,7 @@ int isDir(char *filename)
     int status = stat(filename, &meta_data);
     if(status==-1)
     {
-        perror("File Does Not Exist"); 
+        //perror("File Does Not Exist"); 
         return -1;
     }
 
@@ -54,17 +54,18 @@ int main(int argc, char **argv)
         }
         else
         {
-            wait(NULL);
+            int wstatus;
+            wait(&wstatus);
+            if(WEXITSTATUS(wstatus)==EXIT_FAILURE)
+            {
+                EXIT_STATUS = EXIT_FAILURE;
+            }
             //puts("Parent");
             //putchar('\n');
             putchar('\n');
         }
-        //wait(NULL);
 
     }
-
-
-
 
     return EXIT_STATUS;
 }
