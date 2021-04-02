@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <string.h>
 #include<fcntl.h>
-
-#include <ctype.h> //remove 
 
 int isDir(char *filename)
 {
@@ -24,9 +24,6 @@ int isDir(char *filename)
 
     return 0;
 }
-
-
-
 
 int main(int argc, char **argv)
 {
@@ -59,7 +56,6 @@ int main(int argc, char **argv)
         }
         else
         {
-
             close(fd[1]);
             
             int wstatus;
@@ -69,25 +65,19 @@ int main(int argc, char **argv)
             {
                 EXIT_STATUS = EXIT_FAILURE;
             }
-            
 
-            size_t BUFSIZE = 5;
+            size_t BUFSIZE = 256;
             char* buf[BUFSIZE];
             int bytes = 0;
             while((bytes = read(fd[0], buf, BUFSIZE)) > 0)
             {
-                write(1, buf, bytes);
-                if(bytes!=BUFSIZE)
+                write(STDOUT_FILENO, buf, bytes);
+                if(bytes!=BUFSIZE && (i!=(argc-1)))
                 {
                     putchar('\n');
                 }
-
             }
-
-    
-            close(fd[1]);
             close(fd[0]);
-
         }
 
     }
