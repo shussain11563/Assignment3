@@ -29,15 +29,19 @@ int isDir(char *filename)
 int main(int argc, char **argv)
 {
     //pid_t id = fork();
+    int EXIT_STATUS = EXIT_SUCCESS;
     int page_width = atoi(argv[1]);
 
 
 
     for(int i = 2; i < argc; i++)
     {
+        
         if(isDir(argv[i])==1)
         {
-            
+            char* errorMessage = "Error: This is a directory!\n";
+            write(2, errorMessage, strlen(errorMessage));
+            EXIT_STATUS = EXIT_FAILURE;
             continue;
             
         }
@@ -62,6 +66,6 @@ int main(int argc, char **argv)
 
 
 
-    return EXIT_SUCCESS;
+    return EXIT_STATUS;
 }
 
