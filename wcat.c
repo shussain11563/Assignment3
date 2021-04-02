@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include<fcntl.h>
 
+#include <ctype.h> //remove 
+
 int isDir(char *filename)
 {
     struct stat meta_data;
@@ -28,11 +30,9 @@ int isDir(char *filename)
 
 int main(int argc, char **argv)
 {
-    //pid_t id = fork();
+
     int EXIT_STATUS = EXIT_SUCCESS;
     int page_width = atoi(argv[1]);
-
-
 
     for(int i = 2; i < argc; i++)
     {
@@ -45,24 +45,49 @@ int main(int argc, char **argv)
             continue;
             
         }
-        
+
+        int fd[2];
+        pipe(fd);
+
         pid_t id = fork();
         if(id==0)
         {
-            //puts("Child");
+            close(fd[0]);
+            dup2(fd[1],STDOUT_FILENO); 
+            close(fd[1]);
             execl("ww", "ww", argv[1], argv[i], NULL);
         }
         else
         {
+
+            close(fd[1]);
+            
             int wstatus;
             wait(&wstatus);
+            
             if(WEXITSTATUS(wstatus)==EXIT_FAILURE)
             {
                 EXIT_STATUS = EXIT_FAILURE;
             }
-            //puts("Parent");
-            //putchar('\n');
-            putchar('\n');
+            
+
+            size_t BUFSIZE = 5;
+            char* buf[BUFSIZE];
+            int bytes = 0;
+            while((bytes = read(fd[0], buf, BUFSIZE)) > 0)
+            {
+                write(1, buf, bytes);
+                if(bytes!=BUFSIZE)
+                {
+                    putchar('\n');
+                }
+
+            }
+
+    
+            close(fd[1]);
+            close(fd[0]);
+
         }
 
     }

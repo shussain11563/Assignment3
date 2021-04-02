@@ -15,3 +15,6 @@ test2: wcat
 
 empty: wcat ww file4 file5 file6
 	./wcat 80 file4 file5 file6 file4 file5 file6
+
+clean: 
+	rm  wcat
