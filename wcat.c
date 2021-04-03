@@ -7,6 +7,10 @@
 #include <string.h>
 #include<fcntl.h>
 
+#ifndef WWPATH
+#define WWPATH "ww"
+#endif
+
 int isDir(char *filename)
 {
     struct stat meta_data;
@@ -44,26 +48,56 @@ int main(int argc, char **argv)
         }
 
         int fd[2];
-        pipe(fd);
+        int pipeStatus = pipe(fd);
+        if(pipeStatus==-1)
+        {
+            EXIT_STATUS = EXIT_FAILURE;
+            return EXIT_STATUS;
+        }   
 
         pid_t id = fork();
+        if(id==-1)
+        {
+            EXIT_STATUS = EXIT_FAILURE;
+            return EXIT_STATUS;
+        }   
+
         if(id==0)
         {
             close(fd[0]);
-            dup2(fd[1],STDOUT_FILENO); 
+            int dupStatus = dup2(fd[1],STDOUT_FILENO); 
+            if(dupStatus ==-1)
+            {
+                EXIT_STATUS = EXIT_FAILURE;
+                return EXIT_STATUS;
+            }   
+            
             close(fd[1]);
-            execl("ww", "ww", argv[1], argv[i], NULL);
+            int execStatus = execl(WWPATH, WWPATH, argv[1], argv[i], NULL);
+            if(execStatus=-1)
+            {
+                EXIT_STATUS = EXIT_FAILURE;
+                return EXIT_STATUS;
+            }
         }
         else
         {
             close(fd[1]);
             
             int wstatus;
-            wait(&wstatus);
-            
-            if(WEXITSTATUS(wstatus)==EXIT_FAILURE)
+            int waitStatus = wait(&wstatus);
+            if(waitStatus==-1)
             {
                 EXIT_STATUS = EXIT_FAILURE;
+                return EXIT_STATUS;
+            }
+            
+            if(WIFEXITED(wstatus))
+            {
+                if(WEXITSTATUS(wstatus)==EXIT_FAILURE)
+                {
+                    EXIT_STATUS = EXIT_FAILURE;
+                }
             }
 
             size_t BUFSIZE = 256;
