@@ -12,8 +12,8 @@ test: ww file1 file2 file3
 	cat file1 file2 file3 | ./ww 80
 
 
-final: ww file1 file2 file3
-	./wcat 80 file1 file2 file3 file2
+final: wcat ww file1 file2 file3
+	./wcat 80 file1 file2 file3 file2 file6 file6 file6 file6 file1
 
 run: wcat ww file1 file2
 	./wcat 80 file1 file2

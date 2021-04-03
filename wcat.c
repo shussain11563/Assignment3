@@ -103,13 +103,22 @@ int main(int argc, char **argv)
             size_t BUFSIZE = 256;
             char* buf[BUFSIZE];
             int bytes = 0;
+
+            int addNewLine = 1;
             while((bytes = read(fd[0], buf, BUFSIZE)) > 0)
             {
+                if(i!=2 && addNewLine==1)
+                {
+                    addNewLine = 0;
+                    putchar('\n');
+                }
                 write(STDOUT_FILENO, buf, bytes);
+                /*
                 if(bytes!=BUFSIZE && (i!=(argc-1)))
                 {
                     putchar('\n');
                 }
+                */
             }
             close(fd[0]);
         }
